@@ -2,3 +2,7 @@
 {"from":"elthworth","to":"elthworth","value":100,"data":"rewrad"}
 {"from":"elthworth","to":"elthworth","value":100,"data":"rewrad"}
 {"from":"elthworth","to":"elthworth","value":100,"data":"reward"}
+{"from":"elthworth","to":"elthworth","value":100,"data":"reward"}
+{"from":"elthworth","to":"elthworth","value":100,"data":"reward"}
+{"from":"elthworth","to":"eroist","value":1000,"data":""}{"hash":[133,69,178,29,187,129,218,94,246,80,143,178,121,58,133,70,140,126,16,41,126,76,157,22,34,242,127,227,112,247,216,116],"block":{"Header":{"Parent":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"Time":1664823356},"TXs":[{"from":"elthworth","to":"elthworth","value":10,"data":""},{"from":"elthworth","to":"elthworth","value":300,"data":"reward"}]}}
+{"hash":[21,214,223,56,151,43,73,210,154,69,129,234,14,27,199,213,103,95,121,129,220,138,63,68,38,73,163,229,129,220,26,155],"block":{"Header":{"Parent":[133,69,178,29,187,129,218,94,246,80,143,178,121,58,133,70,140,126,16,41,126,76,157,22,34,242,127,227,112,247,216,116],"Time":1664823356},"TXs":[{"from":"elthworth","to":"elroist","value":2000,"data":""},{"from":"elthworth","to":"elthworth","value":100,"data":"reward"},{"from":"elroist","to":"elthworth","value":1,"data":""},{"from":"elroist","to":"taka","value":1000,"data":""},{"from":"elroist","to":"elthworth","value":50,"data":""},{"from":"elthworth","to":"elthworth","value":600,"data":"reward"}]}}
