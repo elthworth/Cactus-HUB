@@ -2,7 +2,7 @@ package database
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 )
 
 type genesis struct {
@@ -10,7 +10,7 @@ type genesis struct {
 }
 
 func loadGenesis(path string) (genesis, error) {
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return genesis{}, err
 	}
