@@ -4,22 +4,27 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/elthworth/Cactus-HUB/fs"
 	"github.com/spf13/cobra"
 )
 
 const flagDataDir = "datadir"
+const flagIP = "ip"
+const flagPort = "port"
 
 func main() {
 	var cthCmd = &cobra.Command{
 		Use:   "cth",
-		Short: "Cactus HUB CLI",
+		Short: "Cactus Hub CLI",
 		Run: func(cmd *cobra.Command, args []string) {
 		},
 	}
 
+	cthCmd.AddCommand(migrateCmd())
 	cthCmd.AddCommand(versionCmd)
-	cthCmd.AddCommand(BalancesCmd())
 	cthCmd.AddCommand(runCmd())
+	cthCmd.AddCommand(balancesCmd())
+
 	err := cthCmd.Execute()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -32,6 +37,12 @@ func addDefaultRequiredFlags(cmd *cobra.Command) {
 	cmd.MarkFlagRequired(flagDataDir)
 }
 
-func IncorrectUsageErr() error {
+func getDataDirFromCmd(cmd *cobra.Command) string {
+	dataDir, _ := cmd.Flags().GetString(flagDataDir)
+
+	return fs.ExpandPath(dataDir)
+}
+
+func incorrectUsageErr() error {
 	return fmt.Errorf("incorrect usage")
 }
