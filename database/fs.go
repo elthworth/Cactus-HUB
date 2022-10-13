@@ -1,7 +1,6 @@
 package database
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -63,5 +62,5 @@ func dirExists(path string) (bool, error) {
 }
 
 func writeEmptyBlocksDbToDisk(path string) error {
-	return ioutil.WriteFile(path, []byte(""), os.ModePerm)
+	return os.WriteFile(path, []byte(""), os.ModePerm)
 }

@@ -7,9 +7,9 @@ import (
 )
 
 const Major = "0"
-const Minor = "1"
-const Fix = "0"
-const Verbal = "Add Transactions and Balances List"
+const Minor = "7"
+const Fix = "2"
+const Verbal = "Peer Sync"
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
