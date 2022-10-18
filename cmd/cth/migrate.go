@@ -1,11 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/elthworth/Cactus-HUB/database"
+	"github.com/elthworth/Cactus-HUB/node"
 	"github.com/spf13/cobra"
 )
 
@@ -14,67 +15,53 @@ var migrateCmd = func() *cobra.Command {
 		Use:   "migrate",
 		Short: "Migrates the blockchain database according to new business rules.",
 		Run: func(cmd *cobra.Command, args []string) {
-			state, err := database.NewStateFromDisk(getDataDirFromCmd(cmd))
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
-			defer state.Close()
+			miner, _ := cmd.Flags().GetString(flagMiner)
+			ip, _ := cmd.Flags().GetString(flagIP)
+			port, _ := cmd.Flags().GetUint64(flagPort)
 
-			block0 := database.NewBlock(
-				database.Hash{},
-				state.NextBlockNumber(),
-				uint64(time.Now().Unix()),
-				[]database.Tx{
-					database.NewTx("elthworth", "elthworth", 10, ""),
-					database.NewTx("elthworth", "elthworth", 300, "reward"),
-				},
+			peer := node.NewPeerNode(
+				"127.0.0.1",
+				9000,
+				true,
+				database.NewAccount("elthworth"),
+				false,
 			)
 
-			block0hash, err := state.AddBlock(block0)
+			n := node.New(getDataDirFromCmd(cmd), ip, port, database.NewAccount(miner), peer)
+
+			n.AddPendingTX(database.NewTx("elthworth", "elthworth", 3, ""), peer)
+			n.AddPendingTX(database.NewTx("elthworth", "eroist", 2000, ""), peer)
+			n.AddPendingTX(database.NewTx("eroist", "elthworth", 1, ""), peer)
+			n.AddPendingTX(database.NewTx("eroist", "taka", 1000, ""), peer)
+			n.AddPendingTX(database.NewTx("eroist", "elthworth", 50, ""), peer)
+
+			ctx, closeNode := context.WithTimeout(context.Background(), time.Minute*15)
+
+			go func() {
+				ticker := time.NewTicker(time.Second * 10)
+
+				for {
+					select {
+					case <-ticker.C:
+						if !n.LatestBlockHash().IsEmpty() {
+							closeNode()
+							return
+						}
+					}
+				}
+			}()
+
+			err := n.Run(ctx)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
-
-			block1 := database.NewBlock(
-				block0hash,
-				state.NextBlockNumber(),
-				uint64(time.Now().Unix()),
-				[]database.Tx{
-					database.NewTx("elthworth", "eroist", 2000, ""),
-					database.NewTx("elthworth", "elthworth", 100, "reward"),
-					database.NewTx("eroist", "elthworth", 1, ""),
-					database.NewTx("eroist", "taka", 1000, ""),
-					database.NewTx("eroist", "elthworth", 50, ""),
-					database.NewTx("elthworth", "elthworth", 600, "reward"),
-				},
-			)
-
-			block1hash, err := state.AddBlock(block1)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
-
-			block2 := database.NewBlock(
-				block1hash,
-				state.NextBlockNumber(),
-				uint64(time.Now().Unix()),
-				[]database.Tx{
-					database.NewTx("elthworth", "elthworth", 24700, "reward"),
-				},
-			)
-
-			_, err = state.AddBlock(block2)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
+				fmt.Println(err)
 			}
 		},
 	}
 
 	addDefaultRequiredFlags(migrateCmd)
+	migrateCmd.Flags().String(flagMiner, node.DefaultMiner, "miner account of this node to receive block rewards")
+	migrateCmd.Flags().String(flagIP, node.DefaultIP, "exposed IP for communication with peers")
+	migrateCmd.Flags().Uint64(flagPort, node.DefaultHTTPort, "exposed HTTP port for communication with peers")
 
 	return migrateCmd
 }
